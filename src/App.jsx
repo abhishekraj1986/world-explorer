@@ -12,11 +12,7 @@ import CountryCard from "./components/CountryCard";
 import ComparePage from "./ComparePage.jsx";
 import QuizPage from "./QuizPage.jsx";
 
-function HomePage({
-  countries,
-  favorites,
-  onToggleFavorite,
-}) {
+function HomePage({ countries, favorites, onToggleFavorite }) {
   const [search, setSearch] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [sortOrder, setSortOrder] = useState("name");
@@ -114,7 +110,9 @@ function HomePage({
 
           <select
             value={selectedRegion}
-            onChange={(event) => setSelectedRegion(event.target.value)}
+            onChange={(event) =>
+              setSelectedRegion(event.target.value)
+            }
             aria-label="Filter by region"
           >
             {regions.map((region) => (
@@ -221,7 +219,8 @@ function CountryDetailPage({
 
         <div className="detail-info">
           <p>
-            <strong>Official name:</strong> {country.officialName}
+            <strong>Official name:</strong>{" "}
+            {country.officialName}
           </p>
 
           <p>
@@ -286,6 +285,30 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Light/dark theme
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      return localStorage.getItem("worldExplorerTheme") === "dark";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = darkMode
+      ? "dark"
+      : "light";
+
+    try {
+      localStorage.setItem(
+        "worldExplorerTheme",
+        darkMode ? "dark" : "light"
+      );
+    } catch {
+      // Theme still works for this session if storage is unavailable.
+    }
+  }, [darkMode]);
+
   const [favorites, setFavorites] = useState(() => {
     try {
       const saved = localStorage.getItem("worldExplorerFavorites");
@@ -329,10 +352,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(
-      "worldExplorerFavorites",
-      JSON.stringify(favorites)
-    );
+    try {
+      localStorage.setItem(
+        "worldExplorerFavorites",
+        JSON.stringify(favorites)
+      );
+    } catch {
+      // Favorites remain available for this session.
+    }
   }, [favorites]);
 
   function toggleFavorite(countryId) {
@@ -355,6 +382,16 @@ function App() {
           <Link to="/#countries">Countries</Link>
           <Link to="/compare">Compare</Link>
           <Link to="/quiz">Quiz 🧠</Link>
+
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={() => setDarkMode((previous) => !previous)}
+            aria-label="Toggle light and dark mode"
+            aria-pressed={darkMode}
+          >
+            {darkMode ? "☀️ Light" : "🌙 Dark"}
+          </button>
         </div>
       </nav>
 
