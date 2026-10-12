@@ -6,6 +6,7 @@ export const countries = [
     region: "Asia",
     population: 1428627663,
     flag: "🇮🇳",
+    flagImage: "https://flagcdn.com/w320/in.png",
   },
   {
     id: 2,
@@ -14,6 +15,7 @@ export const countries = [
     region: "Asia",
     population: 123294513,
     flag: "🇯🇵",
+    flagImage: "https://flagcdn.com/w320/jp.png",
   },
   {
     id: 3,
@@ -22,6 +24,7 @@ export const countries = [
     region: "Europe",
     population: 68042591,
     flag: "🇫🇷",
+    flagImage: "https://flagcdn.com/w320/fr.png",
   },
   {
     id: 4,
@@ -30,6 +33,7 @@ export const countries = [
     region: "South America",
     population: 216422446,
     flag: "🇧🇷",
+    flagImage: "https://flagcdn.com/w320/br.png",
   },
   {
     id: 5,
@@ -38,6 +42,7 @@ export const countries = [
     region: "Oceania",
     population: 26658905,
     flag: "🇦🇺",
+    flagImage: "https://flagcdn.com/w320/au.png",
   },
   {
     id: 6,
@@ -46,5 +51,6 @@ export const countries = [
     region: "Africa",
     population: 112716598,
     flag: "🇪🇬",
+    flagImage: "https://flagcdn.com/w320/eg.png",
   },
 ];
