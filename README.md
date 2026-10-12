@@ -1,16 +1,52 @@
-# React + Vite
+# 🌍 World Explorer
+**World Explorer** is a React-based web application that helps users explore countries around the world through an interactive interface.
+## ✨ Features
+- 🌎 Explore countries around the world.
+- 🔍 Search and filter countries.
+- 🏳️ View country details, including capital, region, population, and area.
+- ⚖️ Compare two countries side by side.
+- 🧠 Test your knowledge with an interactive quiz.
+- 🌙 Switch between light and dark themes.
+## 🛠️ Tech Stack
+- React
+- JavaScript
+- CSS
+- React Router
+- Vite
+##🚀Getting Started
+### Prerequisites
+Install [Node.js](https://nodejs.org/) before running the project.
+### Installation
+1. Clone this repository:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+   git clone YOUR_REPOSITORY_URL
+   
 
-Currently, two official plugins are available:
+2. Navigate to the project folder:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+   cd YOUR_PROJECT_FOLDER
+   
 
-## React Compiler
+3. Install dependencies:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+   npm install
+   
 
-## Expanding the ESLint configuration
+4. Start the development server:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+   npm run dev
+   
+
+5. Open the local URL displayed in your terminal.
+
+## 📁 Project Overview
+
+The application includes country exploration, country details, a comparison page, and an interactive quiz.
+
+## 🎯 Project Objective
+
+This project demonstrates practical skills in React, reusable components, routing, state management, and CSS styling.
+
+## 👨‍💻 Author
+
+**Abhishek raj**
