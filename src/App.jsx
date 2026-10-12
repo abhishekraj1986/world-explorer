@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   Routes,
@@ -8,12 +7,16 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import { countries } from "./data/countries";
+import { fetchCountries } from "./data/countriesApi";
 import CountryCard from "./components/CountryCard";
 import ComparePage from "./ComparePage.jsx";
 import QuizPage from "./QuizPage.jsx";
 
-function HomePage({ favorites, onToggleFavorite }) {
+function HomePage({
+  countries,
+  favorites,
+  onToggleFavorite,
+}) {
   const [search, setSearch] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("All");
   const [sortOrder, setSortOrder] = useState("name");
@@ -91,9 +94,15 @@ function HomePage({ favorites, onToggleFavorite }) {
             className="favorites-filter-button"
             onClick={() => setShowFavorites(!showFavorites)}
           >
-            {showFavorites ? "Show All Countries" : "Show Favorites ❤️"}
+            {showFavorites
+              ? "Show All Countries"
+              : "Show Favorites ❤️"}
           </button>
         </div>
+
+        <p className="subtitle">
+          Explore {countries.length} countries and territories.
+        </p>
 
         <div className="filters">
           <input
@@ -153,12 +162,16 @@ function HomePage({ favorites, onToggleFavorite }) {
   );
 }
 
-function CountryDetailPage({ favorites, onToggleFavorite }) {
+function CountryDetailPage({
+  countries,
+  favorites,
+  onToggleFavorite,
+}) {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const country = countries.find(
-    (item) => item.id === Number(id)
+    (item) => String(item.id) === id
   );
 
   if (!country) {
@@ -189,7 +202,16 @@ function CountryDetailPage({ favorites, onToggleFavorite }) {
       </button>
 
       <section className="detail-card">
-        <div className="detail-flag">{country.flag}</div>
+        <div className="detail-flag">
+          {country.flagImage ? (
+            <img
+              src={country.flagImage}
+              alt={`${country.name} flag`}
+            />
+          ) : (
+            country.flag
+          )}
+        </div>
 
         <h1>{country.name}</h1>
 
@@ -199,6 +221,10 @@ function CountryDetailPage({ favorites, onToggleFavorite }) {
 
         <div className="detail-info">
           <p>
+            <strong>Official name:</strong> {country.officialName}
+          </p>
+
+          <p>
             <strong>Capital:</strong> {country.capital}
           </p>
 
@@ -207,8 +233,36 @@ function CountryDetailPage({ favorites, onToggleFavorite }) {
           </p>
 
           <p>
+            <strong>Subregion:</strong> {country.subregion}
+          </p>
+
+          <p>
             <strong>Population:</strong>{" "}
             {country.population.toLocaleString()}
+          </p>
+
+          <p>
+            <strong>Area:</strong>{" "}
+            {country.area.toLocaleString()} km²
+          </p>
+
+          <p>
+            <strong>Languages:</strong>{" "}
+            {country.languages.length
+              ? country.languages.join(", ")
+              : "N/A"}
+          </p>
+
+          <p>
+            <strong>Currencies:</strong>{" "}
+            {country.currencies.length
+              ? country.currencies
+                  .map(
+                    (currency) =>
+                      `${currency.name} (${currency.symbol})`
+                  )
+                  .join(", ")
+              : "N/A"}
           </p>
         </div>
 
@@ -218,7 +272,9 @@ function CountryDetailPage({ favorites, onToggleFavorite }) {
           onClick={() => onToggleFavorite(country.id)}
           aria-pressed={isFavorite}
         >
-          {isFavorite ? "❤️ Saved to Favorites" : "♡ Add to Favorites"}
+          {isFavorite
+            ? "❤️ Saved to Favorites"
+            : "♡ Add to Favorites"}
         </button>
       </section>
     </main>
@@ -226,17 +282,51 @@ function CountryDetailPage({ favorites, onToggleFavorite }) {
 }
 
 function App() {
+  const [countries, setCountries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [favorites, setFavorites] = useState(() => {
     try {
-      const savedFavorites = localStorage.getItem(
-        "worldExplorerFavorites"
-      );
-
-      return savedFavorites ? JSON.parse(savedFavorites) : [];
+      const saved = localStorage.getItem("worldExplorerFavorites");
+      return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
     }
   });
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadCountries() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await fetchCountries();
+
+        if (active) {
+          setCountries(data);
+        }
+      } catch (err) {
+        if (active) {
+          setError(
+            err.message || "Could not load country data."
+          );
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadCountries();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(
@@ -246,10 +336,10 @@ function App() {
   }, [favorites]);
 
   function toggleFavorite(countryId) {
-    setFavorites((previousFavorites) =>
-      previousFavorites.includes(countryId)
-        ? previousFavorites.filter((id) => id !== countryId)
-        : [...previousFavorites, countryId]
+    setFavorites((previous) =>
+      previous.includes(countryId)
+        ? previous.filter((id) => id !== countryId)
+        : [...previous, countryId]
     );
   }
 
@@ -268,37 +358,58 @@ function App() {
         </div>
       </nav>
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-            />
-          }
-        />
+      {loading ? (
+        <main className="detail-page">
+          <h2>🌍 Loading countries...</h2>
+          <p>Please wait while we explore the world.</p>
+        </main>
+      ) : error ? (
+        <main className="detail-page">
+          <h2>Unable to load countries</h2>
+          <p>{error}</p>
+          <button
+            type="button"
+            className="back-button"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
+        </main>
+      ) : (
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                countries={countries}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+              />
+            }
+          />
 
-        <Route
-          path="/country/:id"
-          element={
-            <CountryDetailPage
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-            />
-          }
-        />
+          <Route
+            path="/country/:id"
+            element={
+              <CountryDetailPage
+                countries={countries}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+              />
+            }
+          />
 
-        <Route
-          path="/compare"
-          element={<ComparePage />}
-        />
+          <Route
+            path="/compare"
+            element={<ComparePage countries={countries} />}
+          />
 
-        <Route
-          path="/quiz"
-          element={<QuizPage />}
-        />
-      </Routes>
+          <Route
+            path="/quiz"
+            element={<QuizPage countries={countries} />}
+          />
+        </Routes>
+      )}
     </>
   );
 }

@@ -1,10 +1,19 @@
-
 import { Link } from "react-router-dom";
 
 function CountryCard({ country, isFavorite, onToggleFavorite }) {
   return (
     <div className="country-card">
-      <div className="country-flag">{country.flag}</div>
+      <div className="country-flag">
+        {country.flagImage ? (
+          <img
+            src={country.flagImage}
+            alt={`${country.name} flag`}
+            loading="lazy"
+          />
+        ) : (
+          <span>{country.flag || "🏳️"}</span>
+        )}
+      </div>
 
       <h2>{country.name}</h2>
 
